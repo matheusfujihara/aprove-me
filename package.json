@@ -1,0 +1,12 @@
+{
+  "name": "aprove-me",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">\r   <img src=\"./assets/logo-bankme.png\" alt=\"Logo Bankme\" width=\"91\" height=\"108\">\r </p>\r <h1 align=\"center\">\r   Aprove-me\r </h1>",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
