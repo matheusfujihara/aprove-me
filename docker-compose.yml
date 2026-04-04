@@ -18,10 +18,11 @@ services:
   api:
     build:
       context: ./api
+    restart: always
     ports:
-      - "${API_PORT}:${API_PORT}"
+      - "${PORT}:${PORT}"
     environment:
-      - API_PORT=${API_PORT}
+      - PORT=${PORT}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_USERNAME=${DB_USERNAME}

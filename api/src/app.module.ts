@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ReceivableModule } from './modules/receivable/receivable.module';
-import { AssignorModule } from './modules/assignor/assignor.module';
 import { EnvConfigModule } from './config/env/env-cofig.module';
 import { DatabaseProvider } from './config/database/database.provider';
+import { PayablesModule } from './modules/payables/payables.module';
+import { ReceivablesModule } from './modules/receivables/receivables.module';
+import { AssignorsModule } from './modules/assignors/assignors.module';
 
 @Module({
   imports: [
@@ -11,8 +12,9 @@ import { DatabaseProvider } from './config/database/database.provider';
     TypeOrmModule.forRootAsync({
       useClass: DatabaseProvider,
     }),
-    ReceivableModule,
-    AssignorModule,
+    PayablesModule,
+    ReceivablesModule,
+    AssignorsModule,
   ],
 })
 export class AppModule {}
