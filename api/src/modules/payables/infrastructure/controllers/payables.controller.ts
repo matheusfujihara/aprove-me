@@ -1,5 +1,5 @@
+import { PayablesService } from '@modules/payables/application/services/payables.service';
 import { Controller } from '@nestjs/common';
-import { PayablesService } from './payables.service';
 
 @Controller('payables')
 export class PayablesController {

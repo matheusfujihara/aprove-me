@@ -16,6 +16,13 @@
     "noImplicitAny": false,
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "ignoreDeprecations": "6.0",
+    "baseUrl": "./",
+    "paths": {
+      "@global/*": ["src/global/*"],
+      "@modules/*": ["src/modules/*"],
+      "@database/*": ["src/config/database/*"]
+    }
   }
 }

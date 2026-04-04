@@ -1,5 +1,5 @@
+import { AssignorsService } from '@modules/assignors/application/services/assignors.service';
 import { Controller } from '@nestjs/common';
-import { AssignorsService } from './assignors.service';
 
 @Controller('assignors')
 export class AssignorsController {

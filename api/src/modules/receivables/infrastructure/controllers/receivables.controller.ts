@@ -1,5 +1,5 @@
+import { ReceivablesService } from '@modules/receivables/application/services/receivables.service';
 import { Controller } from '@nestjs/common';
-import { ReceivablesService } from './receivables.service';
 
 @Controller('receivables')
 export class ReceivablesController {
