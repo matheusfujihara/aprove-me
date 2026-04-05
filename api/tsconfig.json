@@ -17,7 +17,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "strictPropertyInitialization": false,
-    "ignoreDeprecations": "6.0",
     "baseUrl": "./",
     "paths": {
       "@global/*": ["src/global/*"],
