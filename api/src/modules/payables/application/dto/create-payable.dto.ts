@@ -8,6 +8,7 @@ import {
   MaxLength,
   ValidateNested,
 } from 'class-validator';
+import { IsCpfOrCnpj } from 'src/shared/validators/isCpfOrCnpj.validator';
 
 class PayableDto {
   @ApiProperty({ example: 123.45, description: 'Payable value' })
@@ -31,8 +32,7 @@ class AssignorDto {
     description: 'Assignor CPF or CNPJ',
   })
   @IsNotEmpty({ message: 'document is required' })
-  @IsString({ message: 'document must be a string' })
-  @MaxLength(30, { message: 'document must be at most 30 characters' })
+  @IsCpfOrCnpj()
   document: string;
 
   @ApiProperty({
