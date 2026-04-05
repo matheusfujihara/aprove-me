@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -8,6 +8,13 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('integrations');
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Bankme API')
@@ -20,7 +27,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
 
-  const PORT = process.env.PORT!;
+  const PORT = process.env.PORT || 3001;
   await app
     .listen(PORT)
     .then(() => logger.log(`server running on port ${PORT}`));

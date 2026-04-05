@@ -1,14 +1,32 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  provider = "prisma-client"
-  output   = "..src/generated/prisma"
-  moduleFormat    = "cjs"
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+model Assignor {
+  id        String    @id @default(uuid())
+  document  String
+  email     String
+  phone     String
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  payables  Payable[]
+}
+
+model Payable {
+  id           String    @id @default(uuid())
+  value        Float
+  emissionDate DateTime
+  assignorId   String
+  assignor     Assignor  @relation(fields: [assignorId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
 }

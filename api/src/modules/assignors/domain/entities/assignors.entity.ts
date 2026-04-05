@@ -1,23 +1,14 @@
-import { Entity, Column, OneToMany } from 'typeorm';
-import { BaseEntity } from 'src/shared/entity/base.entity';
-import { Receivable } from '@modules/receivables/domain/entities/receivables.entity';
-
-@Entity('assignors')
-export class Assignor extends BaseEntity {
-  @Column({ type: 'varchar' })
+export class AssignorEntity {
+  id: string;
   document: string;
-
-  @Column({ type: 'varchar' })
   email: string;
-
-  @Column({ type: 'varchar' })
   phone: string;
-
-  @Column({ type: 'varchar' })
   name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt?: Date | null;
 
-  @OneToMany(() => Receivable, (receivable) => receivable.assignor, {
-    cascade: true,
-  })
-  receivables: Receivable[];
+  constructor(props: Partial<AssignorEntity>) {
+    Object.assign(this, props);
+  }
 }

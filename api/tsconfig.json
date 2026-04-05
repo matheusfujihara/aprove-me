@@ -18,6 +18,7 @@
     "noFallthroughCasesInSwitch": false,
     "strictPropertyInitialization": false,
     "baseUrl": "./",
+    "types": ["node", "jest"],
     "paths": {
       "@global/*": ["src/global/*"],
       "@modules/*": ["src/modules/*"],

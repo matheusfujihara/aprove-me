@@ -1,38 +1,13 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_DATABASE}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   api:
     build:
       context: ./api
     restart: always
     ports:
-      - "${PORT}:${PORT}"
+      - "${PORT:-3001}:${PORT:-3001}"
     environment:
-      - PORT=${PORT}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_USERNAME=${DB_USERNAME}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
-      - DB_SYNC=${DB_SYNC}
-      - DB_LOGGING=${DB_LOGGING}
-    depends_on:
-      postgres:
-        condition: service_healthy
+      - PORT=${PORT:-3001}
+      - DATABASE_URL=file:./prisma/dev.db
 
   app:
     build:
@@ -41,6 +16,3 @@ services:
       - "3000:3000"
     depends_on:
       - api
-
-volumes:
-  postgres_data:

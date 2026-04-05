@@ -1,0 +1,6 @@
+node_modules
+dist
+coverage
+*.db
+prisma/*.db
+npm-debug.log
