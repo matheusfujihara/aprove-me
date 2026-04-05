@@ -16,7 +16,9 @@ import { UpdatePayableUseCase } from '../../application/use-cases/update-payable
 import { DeletePayableUseCase } from '../../application/use-cases/delete-payable.use-case';
 import { CreatePayableDto } from '../../application/dto/create-payable.dto';
 import { UpdatePayableDto } from '../../application/dto/update-payable.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('payable')
 export class PayablesController {
   constructor(

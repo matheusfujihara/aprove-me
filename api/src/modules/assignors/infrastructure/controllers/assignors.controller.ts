@@ -16,7 +16,9 @@ import { UpdateAssignorUseCase } from '../../application/use-cases/update-assign
 import { DeleteAssignorUseCase } from '../../application/use-cases/delete-assignor.use-case';
 import { CreateAssignorDto } from '../../application/dto/create-assignor.dto';
 import { UpdateAssignorDto } from '../../application/dto/update-assignor.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('assignor')
 export class AssignorsController {
   constructor(

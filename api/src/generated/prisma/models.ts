@@ -10,4 +10,5 @@
  */
 export type * from './models/Assignor'
 export type * from './models/Payable'
+export type * from './models/User'
 export type * from './commonInputTypes'

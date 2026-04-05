@@ -30,3 +30,12 @@ model Payable {
   updatedAt    DateTime  @updatedAt
   deletedAt    DateTime?
 }
+
+model User {
+  id        String    @id @default(uuid())
+  email     String
+  password  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}

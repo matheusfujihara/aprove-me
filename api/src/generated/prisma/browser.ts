@@ -27,3 +27,8 @@ export type Assignor = Prisma.AssignorModel
  * 
  */
 export type Payable = Prisma.PayableModel
+/**
+ * Model User
+ * 
+ */
+export type User = Prisma.UserModel

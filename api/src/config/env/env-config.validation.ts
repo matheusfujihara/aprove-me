@@ -1,5 +1,6 @@
 import { plainToInstance } from 'class-transformer';
 import {
+  IsOptional,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -17,6 +18,14 @@ export class EnvironmentVariables {
   @IsNotEmpty()
   @IsString()
   DATABASE_URL: string;
+
+  @IsNotEmpty()
+  @IsString()
+  JWT_SECRET: string;
+
+  @IsOptional()
+  @IsString()
+  JWT_EXPIRES_IN?: string;
 }
 
 export function validate(config: Record<string, unknown>) {
