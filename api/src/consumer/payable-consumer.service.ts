@@ -24,6 +24,7 @@ export class PayableConsumerService implements OnModuleInit {
   }
 
   private async consumePayableQueue() {
+    this.logger.log(`initalize payable queue`)
     const channel = this.rabbitmqService.getChannel();
     await channel.prefetch(1);
 

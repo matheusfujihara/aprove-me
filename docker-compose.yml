@@ -1,4 +1,11 @@
 services:
+  mailpit:
+    image: axllent/mailpit:latest
+    restart: always
+    ports:
+      - "1025:1025" # SMTP
+      - "8025:8025" # Web UI
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     restart: always
@@ -24,14 +31,17 @@ services:
       - PORT=${PORT:-3001}
       - DATABASE_URL=file:./prisma/dev.db
       - RABBITMQ_URL=amqp://${RABBITMQ_USER:-bankme}:${RABBITMQ_PASS:-bankme123}@rabbitmq:5672
-      - MAIL_HOST=${MAIL_HOST:-smtp.example.com}
-      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_HOST=${MAIL_HOST:-mailpit}
+      - MAIL_PORT=${MAIL_PORT:-1025}
       - MAIL_USER=${MAIL_USER:-}
       - MAIL_PASS=${MAIL_PASS:-}
       - MAIL_FROM=${MAIL_FROM:-noreply@bankme.com}
+      - RABBITMQ_MAX_RETRIES=4
     depends_on:
       rabbitmq:
         condition: service_healthy
+      mailpit:
+        condition: service_started
 
   app:
     build:
