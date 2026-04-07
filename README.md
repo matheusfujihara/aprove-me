@@ -1,261 +1,463 @@
 <p align="center">
   <img src="./assets/logo-bankme.png" alt="Logo Bankme" width="91" height="108">
 </p>
-<h1 align="center">
-  Aprove-me
-</h1>
+<h1 align="center">Aprove-me</h1>
+
+Sistema de gestão de recebíveis com API NestJS, frontend Next.js, RabbitMQ e Mailpit.
+
+---
 
 ## Sumário
 
-- [Sumário](#sumário)
-- [❤️ Bem vindos](#️-bem-vindos)
-- [🚀 Vamos nessa!](#-vamos-nessa)
-  - [Dicas](#dicas)
-  - [Como você deverá desenvolver?](#como-você-deverá-desenvolver)
-  - [Qual o tempo para entregar?](#qual-o-tempo-para-entregar)
-- [💻 O Problema](#-o-problema)
-  - [Estrutura de um recebível](#estrutura-de-um-recebível)
-  - [Estrutrua de um cedente](#estrutrua-de-um-cedente)
-- [💾 Back-end](#-back-end)
-  - [Nível 1 - Validação](#nível-1---validação)
-  - [Nível 2 - Persistência](#nível-2---persistência)
-  - [Nível 3 - Testes](#nível-3---testes)
-  - [Nível 4 - Autenticação](#nível-4---autenticação)
-  - [Nível 5 - Gerenciamento de permissões](#nível-5---gerenciamento-de-permissões)
-  - [Nível 6 - Infra e Doc](#nível-6---infra-e-doc)
-  - [Nível 7 - Lotes](#nível-7---lotes)
-  - [Nível 8 - Resiliência](#nível-8---resiliência)
-  - [Nível 9 - Cloud](#nível-9---cloud)
-  - [Nível 10 - Infra as a Code](#nível-10---infra-as-a-code)
-- [🖥️ Front-end](#️-front-end)
-  - [Nível 1 - Cadastro](#nível-1---cadastro)
-  - [Nível 2 - Conectando na API](#nível-2---conectando-na-api)
-  - [Nível 3 - Listando](#nível-3---listando)
-  - [Nível 4 - Autenticação](#nível-4---autenticação-1)
-  - [Nível 5 - Testes](#nível-5---testes)
+- [Inicializando com Docker](#inicializando-com-docker)
+- [UIs de infraestrutura](#uis-de-infraestrutura)
+- [Variáveis de ambiente](#variáveis-de-ambiente)
+- [Endpoints da API](#endpoints-da-api)
+  - [Usuários](#usuários)
+  - [Cedentes](#cedentes-assignors)
+  - [Recebíveis](#recebíveis-payables)
+- [Resumo dos endpoints](#resumo-dos-endpoints)
 
-## ❤️ Bem vindos 
+---
 
-Olá, tudo certo?
+## Inicializando com Docker
 
-Seja bem vindo ao teste de seleção para novos desenvolvedores na Bankme!
+### Pré-requisitos
 
-Estamos honrados que você tenha chegado até aqui!
+- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) instalados
 
-Prepare aquele ☕️ , e venha conosco codar e se divertir!
+### Subir todos os serviços
 
-## 🚀 Vamos nessa!
+```bash
+docker compose up --build
+```
 
-Este é um teste para analisarmos como você desempenha ao entender, traduzir, resolver e entregar um código que resolve um problema.
+Todos os serviços sobem automaticamente:
 
-### Dicas
+| Serviço  | Endereço local         |
+| -------- | ---------------------- |
+| API      | http://localhost:3001  |
+| Frontend | http://localhost:3000  |
+| RabbitMQ | http://localhost:15672 |
+| Mailpit  | http://localhost:8025  |
 
-- Documente;
-- Pergunte;
-- Mostre a sua linha de reciocínio;
-- Trabalhe bem o seu README.md;
+### Parar todos os serviços
 
-### Como você deverá desenvolver?
+```bash
+docker compose down
+```
 
-1. Faça um clone deste projeto em seu GitHub pessoal;
-2. Realize as implementações de acordo com cada um dos níveis;
-3. Faça pequenos commits;
-4. Depois de sentir que fez o seu máximo, faça um PR para o repositório original. (Para conseguir fazer isso, não se esqueça de fazer um Fork antes de iniciar tudo!)
+### Reiniciar serviços
 
-**IMPORTANTE!**
+```bash
+docker compose restart
+```
 
-Não significa que você precisa implementar todos os níveis para ser aprovado no processo!
+---
 
-Faça até onde se sentir confortável.
+## UIs de infraestrutura
 
-### Qual o tempo para entregar?
+### Frontend (Next.js)
 
-Nós temos um período para fechar a vaga em questão. Então, quanto antes você enviar, mais cuidado podemos ter na revisão do seu teste.
+- URL: http://localhost:3000
+- Interface completa para gerenciar cedentes e recebíveis
 
-Mas sabemos que o dia a dia é corrido, faça de forma que fique confortável para você!
+### RabbitMQ Management
 
-Mas não desista! Envie até onde conseguir.
+- URL: http://localhost:15672
+- Usuário: `bankme`
+- Senha: `bankme123`
+- Usado para monitorar filas de processamento em lote
 
-## 💻 O Problema
+### Mailpit (caixa de entrada de e-mails de desenvolvimento)
 
-Um cliente da Bankme solicitou uma nova funcionalidade, relacionada a recebíveis.
+- URL: http://localhost:8025
+- Sem autenticação
+- Captura todos os e-mails enviados pela API (notificações de lote processado, falhas na dead letter queue, etc.)
 
-Todos os dias esse cliente movimenta vários recebíveis, e nosso time de operações estava ficando maluco tendo que cadastrar tudo isso de forma manual!
+---
 
-Os recebíveis são representações digitais de um documento que simula uma dívida a ser recebida. E para Bankme, é importante ter essas informações como parte do fluxo comercial que temos com este cliente.
+## Variáveis de ambiente
 
-### Estrutura de um recebível
+Crie um arquivo `.env` na raiz do projeto para sobrescrever os valores padrão:
 
-| CAMPO        | TIPO          | DESCRIÇÃO                                 |
-|--------------|---------------|-------------------------------------------|
-| id           | string (UUID) | É a identificação de um recebível.        |
-| value        | float         | É o valor do recebível.                   |
-| emissionDate | date          | É a data de emissão do recebível.         |
-| assignor     | string (UUID) | Representa a identificação de um cedente. |
+```env
+PORT=3001
+RABBITMQ_USER=bankme
+RABBITMQ_PASS=bankme123
+MAIL_HOST=mailpit
+MAIL_PORT=1025
+MAIL_USER=
+MAIL_PASS=
+MAIL_FROM=noreply@bankme.com
+```
 
-### Estrutrua de um cedente
+---
 
-| CAMPO    | TIPO          | DESCRIÇÃO                             |
-|----------|---------------|---------------------------------------|
-| id       | string (UUID) | É a identificação de um cedente.      |
-| document | string(30)    | É o documento CPF ou CNPJ do cedente. |
-| email    | string(140)   | É o email do cedente.                 |
-| phone    | string(20)    | É o telefone do cedente.              |
-| name     | string(140)   | É a nome ou razão social do cedente.  |
+## Endpoints da API
 
-## 💾 Back-end
+**Base URL:** `http://localhost:3001/integrations`
 
-### Nível 1 - Validação
+A maioria dos endpoints exige autenticação via **JWT Bearer Token**.  
+Para obter o token, faça login em `POST /integrations/users/login` e use o valor retornado como `Authorization: Bearer <token>` nos demais endpoints.
 
-Implemente uma API utilizando NestJS que receba dados de um recebível e de um cedente.
+---
 
-A rota para este cadastro é:
+### Usuários
 
-`POST /integrations/payable`
+#### Registrar usuário
 
-Essa rota deverá receber todas as informações. É importante garantir a validação destes dados:
+```
+POST /integrations/users
+```
 
-1. Nenhum campo pode ser nulo;
-2. Os ids devem ser do tipo UUID;
-3. As strings não podem ter caracteres a mais do que foi definido em sua estrutura;
+Não requer autenticação.
 
-Se algum campo não estiver preenchido corretamente, deve-se retornar uma mensagem para o usuário mostrando qual o problema foi encontrado em qual campo.
-
-Se todos os dados estiverem validados. Apenas retorne todos os dados em um formato JSON.
-
-### Nível 2 - Persistência
-
-Utilize o Prisma, para incluir um novo banco de dados SQLite.
-
-Crie a estrutura de acordo com o que foi definido.
-
-Caso os dados estejam válidos, cadastre-os.
-
-Crie 2 novas rotas:
-
-`GET /integrations/payable/:id`
-
-`GET /integrations/assignor/:id`
-
-Para que seja possível retornar pagáveis e cedentes de forma independete.
-
-Inclua também rotas para as outras operações:
-
-- Edição;
-- Exclusão;
-- Cadastro;
-
-### Nível 3 - Testes
-
-Crie testes unitários para cada arquivo da aplicação. Para cada nova implementação a seguir, também deve-se criar os testes.
-
-### Nível 4 - Autenticação
-
-Inclua um sistema de autenticação em todas as rotas.
-
-Para isso, crie uma nova rota:
-
-`POST /integrations/auth` que deve receber:
+**Body:**
 
 ```json
 {
-  "login": "aprovame",
-  "password": "aprovame"
+  "email": "usuario@email.com",
+  "password": "Senha@Forte1"
 }
 ```
 
-Com essas credenciais o endpoint deverá retornar um JWT com o tempo de expiração de 1 minuto.
+**curl:**
 
-Reescreva as regras de todas as outras rotas para que o JWT seja enviado como parâmetro do `Header` da requisição.
+```bash
+curl -X POST http://localhost:3001/integrations/users \
+  -H "Content-Type: application/json" \
+  -d '{"email":"usuario@email.com","password":"Senha@Forte1"}'
+```
 
-Se o JWT estiver válido, então os dados devem ser mostrados, caso contrário, deve-se mostrar uma mensagem de "Não autorizado".
+---
 
-### Nível 5 - Gerenciamento de permissões
+#### Login
 
-Agora, crie um sistema de gerenciamento de permissões.
+```
+POST /integrations/users/login
+```
 
-Crie um novo cadastro de permissões. Esse cadastro deve armazenar: `login` e `password`.
+Não requer autenticação.
 
-Refatore o endpoint de autenticação para que sempre se gere JWTs se login e senha estiverem cadastrados no Banco de Dados.
+**Body:**
 
-### Nível 6 - Infra e Doc
+```json
+{
+  "email": "usuario@email.com",
+  "password": "Senha@Forte1"
+}
+```
 
-Crie um `Dockerfile` para sua API.
+**curl:**
 
-Crie um `docker-compose.yaml` para iniciar o seu projeto.
+```bash
+curl -X POST http://localhost:3001/integrations/users/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"usuario@email.com","password":"Senha@Forte1"}'
+```
 
-Documente tudo o que foi feito até aqui:
+> O token JWT retornado deve ser usado como `Bearer <token>` em todos os demais endpoints.
 
-- Como preparar o ambiente;
-- Como instalar as dependência;
-- Como rodar o projeto;
+---
 
-### Nível 7 - Lotes
+#### Obter usuário autenticado
 
-Crie um novo recurso de processamento de pagáveis por lotes.
+```
+GET /integrations/users/me
+```
 
-A ideia é que o cliente possa enviar um GRANDE número de pagáveis de uma única vez. E isso, não poderá ser processado de forma síncrona.
+Requer autenticação.
 
-Crie um novo endpoint:
+**curl:**
 
-`POST integrations/payable/batch`
+```bash
+curl http://localhost:3001/integrations/users/me \
+  -H "Authorization: Bearer <token>"
+```
 
-Neste endpoint deve ser possível receber lotes de até 10.000 pagáveis.
+---
 
-Ao receber todos os pagáveis, deve-se postá-los em uma fila.
+### Cedentes (Assignors)
 
-Crie um consumidor para esta fila que deverá pegar pagável por pagável, criar seu registro no banco de dados, e ao final do processamento do lote enviar um e-mail de lote processado, com o número de sucesso e falhas.
+#### Listar todos os cedentes
 
-### Nível 8 - Resiliência
+```
+GET /integrations/assignor
+```
 
-Caso não seja possível processar algum ítem do lote, coloque-o novamente na fila. Isso deve ocorrer por até 4 vezes. Depois, esse ítem deve ir para uma "Fila Morta" e um e-mail deve ser disparado para o time de operações.
+**curl:**
 
-### Nível 9 - Cloud
+```bash
+curl http://localhost:3001/integrations/assignor \
+  -H "Authorization: Bearer <token>"
+```
 
-Crie uma pipeline de deploy da aplicação em alguma estrutura de Cloud. (AWS, Google, Azure...)
+---
 
-### Nível 10 - Infra as a Code
+#### Criar cedente
 
-Crie uma estrutura em terraforma que monte a infra-estrutura desejada.
+```
+POST /integrations/assignor
+```
 
-## 🖥️ Front-end
+**Body:**
 
-### Nível 1 - Cadastro
+```json
+{
+  "document": "12345678901",
+  "email": "cedente@email.com",
+  "phone": "11999999999",
+  "name": "João da Silva"
+}
+```
 
-Crie uma interface na qual é possível cadastrar os pagáveis.
+**curl:**
 
-É importante que sua interface previna o cadastro de campos vazios, ou que não estejam nas regras definidas anteriormente.
+```bash
+curl -X POST http://localhost:3001/integrations/assignor \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"document":"12345678901","email":"cedente@email.com","phone":"11999999999","name":"João da Silva"}'
+```
 
-Exiba o pagável cadastrado em uma nova tela.
+---
 
-### Nível 2 - Conectando na API
+#### Buscar cedente por ID
 
-Conecte a seu Front-end a API que foi criada, e faça o cadastro de um pagável refletir na sua API.
+```
+GET /integrations/assignor/:id
+```
 
-Faça também uma tela para cadastro do cedente.
+**curl:**
 
-Altere o cadastro inicial para que o campo `assignor` seja um `combobox` no qual seja possível selecionar um cedente.
+```bash
+curl http://localhost:3001/integrations/assignor/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>"
+```
 
-### Nível 3 - Listando
+---
 
-Agora faça um sistema de listagens de pagáveis. Mostrando apenas: `id`, `value` e `emissionDate`.
+#### Atualizar cedente
 
-Para cada ítem da lista, coloque um link que mostra os detalhes do pagável.
+```
+PATCH /integrations/assignor/:id
+```
 
-Além disso, coloque opções de editar e excluir.
+**Body (todos os campos são opcionais):**
 
-Nessa página de detalhes, inclua um novo link para exibir os dados do cedente.
+```json
+{
+  "name": "João Atualizado",
+  "email": "novo@email.com",
+  "phone": "11888888888",
+  "document": "98765432100"
+}
+```
 
-Todos os dados devem vir da API.
+**curl:**
 
-### Nível 4 - Autenticação
+```bash
+curl -X PATCH http://localhost:3001/integrations/assignor/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"João Atualizado"}'
+```
 
-Implemente agora o sistema de login e senha para poder acessar as suas rotas de forma autenticada.
+---
 
-Armazene o token no `localStorage` do seu navegador.
+#### Deletar cedente
 
-Caso o token expire, redirecione o usuário para a página de login.
+```
+DELETE /integrations/assignor/:id
+```
 
-### Nível 5 - Testes
+**curl:**
 
-Crie testes para sua aplicação Front-end.
+```bash
+curl -X DELETE http://localhost:3001/integrations/assignor/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+### Recebíveis (Payables)
+
+#### Listar todos os recebíveis
+
+```
+GET /integrations/payable
+```
+
+**curl:**
+
+```bash
+curl http://localhost:3001/integrations/payable \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### Criar recebível
+
+```
+POST /integrations/payable
+```
+
+**Body:**
+
+```json
+{
+  "payable": {
+    "value": 1500.0,
+    "emissionDate": "2026-04-07T00:00:00.000Z"
+  },
+  "assignor": {
+    "document": "12345678901",
+    "email": "cedente@email.com",
+    "phone": "11999999999",
+    "name": "João da Silva"
+  }
+}
+```
+
+**curl:**
+
+```bash
+curl -X POST http://localhost:3001/integrations/payable \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"payable":{"value":1500.00,"emissionDate":"2026-04-07T00:00:00.000Z"},"assignor":{"document":"12345678901","email":"cedente@email.com","phone":"11999999999","name":"João da Silva"}}'
+```
+
+---
+
+#### Buscar recebível por ID
+
+```
+GET /integrations/payable/:id
+```
+
+**curl:**
+
+```bash
+curl http://localhost:3001/integrations/payable/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### Atualizar recebível
+
+```
+PATCH /integrations/payable/:id
+```
+
+**Body (todos os campos são opcionais):**
+
+```json
+{
+  "value": 2000.0,
+  "emissionDate": "2026-04-07T00:00:00.000Z",
+  "assignorId": "550e8400-e29b-41d4-a716-446655440000"
+}
+```
+
+**curl:**
+
+```bash
+curl -X PATCH http://localhost:3001/integrations/payable/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"value":2000.00}'
+```
+
+---
+
+#### Deletar recebível
+
+```
+DELETE /integrations/payable/:id
+```
+
+**curl:**
+
+```bash
+curl -X DELETE http://localhost:3001/integrations/payable/550e8400-e29b-41d4-a716-446655440000 \
+  -H "Authorization: Bearer <token>"
+```
+
+---
+
+#### Criar recebíveis em lote (batch)
+
+```
+POST /integrations/payable/batch
+```
+
+Processamento assíncrono via RabbitMQ. Suporta de 1 a 10.000 itens por requisição.  
+Ao final do processamento, um e-mail é enviado com o número de sucessos e falhas.  
+Itens com falha são reprocessados até 4 vezes; após isso vão para a dead letter queue e um novo e-mail é disparado para o time de operações.
+
+**Body:**
+
+```json
+{
+  "payables": [
+    {
+      "payable": {
+        "value": 1500.0,
+        "emissionDate": "2026-04-07T00:00:00.000Z"
+      },
+      "assignor": {
+        "document": "12345678901",
+        "email": "cedente@email.com",
+        "phone": "11999999999",
+        "name": "João da Silva"
+      }
+    },
+    {
+      "payable": {
+        "value": 750.5,
+        "emissionDate": "2026-04-07T00:00:00.000Z"
+      },
+      "assignor": {
+        "document": "98765432100",
+        "email": "outro@email.com",
+        "phone": "11888888888",
+        "name": "Maria Souza"
+      }
+    }
+  ]
+}
+```
+
+**curl:**
+
+```bash
+curl -X POST http://localhost:3001/integrations/payable/batch \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"payables":[{"payable":{"value":1500.00,"emissionDate":"2026-04-07T00:00:00.000Z"},"assignor":{"document":"12345678901","email":"cedente@email.com","phone":"11999999999","name":"João da Silva"}},{"payable":{"value":750.50,"emissionDate":"2026-04-07T00:00:00.000Z"},"assignor":{"document":"98765432100","email":"outro@email.com","phone":"11888888888","name":"Maria Souza"}}]}'
+```
+
+---
+
+## Resumo dos endpoints
+
+| Método | Endpoint                      | Auth | Descrição                 |
+| ------ | ----------------------------- | ---- | ------------------------- |
+| POST   | `/integrations/users`         | ❌   | Registrar usuário         |
+| POST   | `/integrations/users/login`   | ❌   | Login (obtém JWT)         |
+| GET    | `/integrations/users/me`      | ✅   | Usuário autenticado atual |
+| GET    | `/integrations/assignor`      | ✅   | Listar cedentes           |
+| POST   | `/integrations/assignor`      | ✅   | Criar cedente             |
+| GET    | `/integrations/assignor/:id`  | ✅   | Buscar cedente por ID     |
+| PATCH  | `/integrations/assignor/:id`  | ✅   | Atualizar cedente         |
+| DELETE | `/integrations/assignor/:id`  | ✅   | Deletar cedente           |
+| GET    | `/integrations/payable`       | ✅   | Listar recebíveis         |
+| POST   | `/integrations/payable`       | ✅   | Criar recebível           |
+| GET    | `/integrations/payable/:id`   | ✅   | Buscar recebível por ID   |
+| PATCH  | `/integrations/payable/:id`   | ✅   | Atualizar recebível       |
+| DELETE | `/integrations/payable/:id`   | ✅   | Deletar recebível         |
+| POST   | `/integrations/payable/batch` | ✅   | Criar recebíveis em lote  |
