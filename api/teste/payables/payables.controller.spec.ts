@@ -4,6 +4,8 @@ import { CreatePayableUseCase } from '../../src/modules/payables/application/use
 import { FindPayableByIdUseCase } from '../../src/modules/payables/application/use-cases/find-payable-by-id.use-case';
 import { UpdatePayableUseCase } from '../../src/modules/payables/application/use-cases/update-payable.use-case';
 import { DeletePayableUseCase } from '../../src/modules/payables/application/use-cases/delete-payable.use-case';
+import { FindAllPayablesUseCase } from '../../src/modules/payables/application/use-cases/find-all-payables.use-case';
+import { BatchPayableUseCase } from '../../src/modules/payables/application/use-cases/batch-payable.use-case';
 import { AssignorEntity } from '../../src/modules/assignors/domain/entities/assignors.entity';
 import { PayableEntity } from '../../src/modules/payables/domain/entities/payable.entity';
 
@@ -32,6 +34,14 @@ describe('PayablesController', () => {
         },
         {
           provide: DeletePayableUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: FindAllPayablesUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: BatchPayableUseCase,
           useValue: { execute: jest.fn() },
         },
       ],

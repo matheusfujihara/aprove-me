@@ -12,13 +12,16 @@ describe('CreatePayableUseCase', () => {
   beforeEach(() => {
     assignorRepository = {
       create: jest.fn(),
+      findAll: jest.fn(),
       findById: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      findByDocument: jest.fn(),
     } as jest.Mocked<AssignorRepository>;
 
     payableRepository = {
       create: jest.fn(),
+      findAll: jest.fn(),
       findById: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),

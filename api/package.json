@@ -95,7 +95,8 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^@modules/(.*)$": "<rootDir>/src/modules/$1",
-      "^@database/(.*)$": "<rootDir>/src/config/database/$1"
+      "^@database/(.*)$": "<rootDir>/src/config/database/$1",
+      "^src/(.*)$": "<rootDir>/src/$1"
     }
   }
 }

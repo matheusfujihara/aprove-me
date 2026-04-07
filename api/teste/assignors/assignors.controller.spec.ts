@@ -4,6 +4,7 @@ import { CreateAssignorUseCase } from '../../src/modules/assignors/application/u
 import { FindAssignorByIdUseCase } from '../../src/modules/assignors/application/use-cases/find-assignor-by-id.use-case';
 import { UpdateAssignorUseCase } from '../../src/modules/assignors/application/use-cases/update-assignor.use-case';
 import { DeleteAssignorUseCase } from '../../src/modules/assignors/application/use-cases/delete-assignor.use-case';
+import { FindAllAssignorsUseCase } from '../../src/modules/assignors/application/use-cases/find-all-assignors.use-case';
 import { AssignorEntity } from '../../src/modules/assignors/domain/entities/assignors.entity';
 
 describe('AssignorsController', () => {
@@ -31,6 +32,10 @@ describe('AssignorsController', () => {
         },
         {
           provide: DeleteAssignorUseCase,
+          useValue: { execute: jest.fn() },
+        },
+        {
+          provide: FindAllAssignorsUseCase,
           useValue: { execute: jest.fn() },
         },
       ],
