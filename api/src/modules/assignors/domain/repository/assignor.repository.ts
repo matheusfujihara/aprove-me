@@ -4,6 +4,7 @@ export abstract class AssignorRepository {
   abstract create(
     data: Omit<AssignorEntity, 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'>,
   ): Promise<AssignorEntity>;
+  abstract findAll(): Promise<AssignorEntity[]>;
   abstract findById(id: string): Promise<AssignorEntity | null>;
   abstract update(
     id: string,

@@ -26,6 +26,30 @@ export class EnvironmentVariables {
   @IsOptional()
   @IsString()
   JWT_EXPIRES_IN?: string;
+
+  @IsOptional()
+  @IsString()
+  RABBITMQ_URL?: string;
+
+  @IsOptional()
+  @IsString()
+  MAIL_HOST?: string;
+
+  @IsOptional()
+  @IsNumber()
+  MAIL_PORT?: number;
+
+  @IsOptional()
+  @IsString()
+  MAIL_USER?: string;
+
+  @IsOptional()
+  @IsString()
+  MAIL_PASS?: string;
+
+  @IsOptional()
+  @IsString()
+  MAIL_FROM?: string;
 }
 
 export function validate(config: Record<string, unknown>) {

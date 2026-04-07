@@ -17,16 +17,26 @@ import { DeletePayableUseCase } from '../../application/use-cases/delete-payable
 import { CreatePayableDto } from '../../application/dto/create-payable.dto';
 import { UpdatePayableDto } from '../../application/dto/update-payable.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { FindAllPayablesUseCase } from '../../application/use-cases/find-all-payables.use-case';
+import { BatchPayableDto } from '@modules/payables/application/dto/batch-payable.dto';
+import { BatchPayableUseCase } from '@modules/payables/application/use-cases/batch-payable.use-case';
 
 @ApiBearerAuth()
 @Controller('payable')
 export class PayablesController {
   constructor(
     private readonly createPayableUseCase: CreatePayableUseCase,
+    private readonly findAllPayablesUseCase: FindAllPayablesUseCase,
     private readonly findPayableByIdUseCase: FindPayableByIdUseCase,
     private readonly updatePayableUseCase: UpdatePayableUseCase,
     private readonly deletePayableUseCase: DeletePayableUseCase,
+    private readonly batchPayableUseCase: BatchPayableUseCase
   ) {}
+
+  @Get()
+  async findAll() {
+    return this.findAllPayablesUseCase.execute();
+  }
 
   @Post()
   async create(@Body() dto: CreatePayableDto) {
@@ -50,5 +60,10 @@ export class PayablesController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.deletePayableUseCase.execute(id);
+  }
+  
+  @Post('batch')
+  async batch(@Body() dto: BatchPayableDto) {
+    return this.batchPayableUseCase.execute(dto);
   }
 }

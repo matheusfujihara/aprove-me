@@ -4,9 +4,11 @@ import { CreatePayableUseCase } from './application/use-cases/create-payable.use
 import { FindPayableByIdUseCase } from './application/use-cases/find-payable-by-id.use-case';
 import { UpdatePayableUseCase } from './application/use-cases/update-payable.use-case';
 import { DeletePayableUseCase } from './application/use-cases/delete-payable.use-case';
+import { BatchPayableUseCase } from './application/use-cases/batch-payable.use-case';
 import { PayableRepository } from './domain/repository/payable.repository';
 import { PayablePrismaRepository } from './infrastructure/persistence/payable-prisma.repository';
 import { AssignorsModule } from '../assignors/assignors.module';
+import { FindAllPayablesUseCase } from './application/use-cases/find-all-payables.use-case';
 
 @Module({
   imports: [AssignorsModule],
@@ -17,9 +19,12 @@ import { AssignorsModule } from '../assignors/assignors.module';
       useClass: PayablePrismaRepository,
     },
     CreatePayableUseCase,
+    FindAllPayablesUseCase,
     FindPayableByIdUseCase,
     UpdatePayableUseCase,
     DeletePayableUseCase,
+    BatchPayableUseCase,
   ],
+  exports: [CreatePayableUseCase],
 })
 export class PayablesModule {}

@@ -16,6 +16,14 @@ export class AssignorPrismaRepository extends AssignorRepository {
     return new AssignorEntity(assignor);
   }
 
+  async findAll(): Promise<AssignorEntity[]> {
+    const assignors = await this.prisma.assignor.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+    return assignors.map((assignor) => new AssignorEntity(assignor));
+  }
+
   async findById(id: string): Promise<AssignorEntity | null> {
     const assignor = await this.prisma.assignor.findFirst({
       where: { id, deletedAt: null },

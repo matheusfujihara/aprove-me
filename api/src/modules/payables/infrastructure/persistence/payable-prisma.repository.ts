@@ -16,6 +16,14 @@ export class PayablePrismaRepository extends PayableRepository {
     return new PayableEntity(payable);
   }
 
+  async findAll(): Promise<PayableEntity[]> {
+    const payables = await this.prisma.payable.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
+    return payables.map((payable) => new PayableEntity(payable));
+  }
+
   async findById(id: string): Promise<PayableEntity | null> {
     const payable = await this.prisma.payable.findFirst({
       where: { id, deletedAt: null },

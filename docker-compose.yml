@@ -1,4 +1,19 @@
 services:
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-bankme}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-bankme123}
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   api:
     build:
       context: ./api
@@ -8,6 +23,15 @@ services:
     environment:
       - PORT=${PORT:-3001}
       - DATABASE_URL=file:./prisma/dev.db
+      - RABBITMQ_URL=amqp://${RABBITMQ_USER:-bankme}:${RABBITMQ_PASS:-bankme123}@rabbitmq:5672
+      - MAIL_HOST=${MAIL_HOST:-smtp.example.com}
+      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_USER=${MAIL_USER:-}
+      - MAIL_PASS=${MAIL_PASS:-}
+      - MAIL_FROM=${MAIL_FROM:-noreply@bankme.com}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
   app:
     build:

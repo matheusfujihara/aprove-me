@@ -17,16 +17,23 @@ import { DeleteAssignorUseCase } from '../../application/use-cases/delete-assign
 import { CreateAssignorDto } from '../../application/dto/create-assignor.dto';
 import { UpdateAssignorDto } from '../../application/dto/update-assignor.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { FindAllAssignorsUseCase } from '../../application/use-cases/find-all-assignors.use-case';
 
 @ApiBearerAuth()
 @Controller('assignor')
 export class AssignorsController {
   constructor(
     private readonly createAssignorUseCase: CreateAssignorUseCase,
+    private readonly findAllAssignorsUseCase: FindAllAssignorsUseCase,
     private readonly findAssignorByIdUseCase: FindAssignorByIdUseCase,
     private readonly updateAssignorUseCase: UpdateAssignorUseCase,
     private readonly deleteAssignorUseCase: DeleteAssignorUseCase,
   ) {}
+
+  @Get()
+  async findAll() {
+    return this.findAllAssignorsUseCase.execute();
+  }
 
   @Post()
   async create(@Body() dto: CreateAssignorDto) {
