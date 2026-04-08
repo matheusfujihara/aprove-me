@@ -6,6 +6,7 @@ import { UpdatePayableUseCase } from '../../src/modules/payables/application/use
 import { DeletePayableUseCase } from '../../src/modules/payables/application/use-cases/delete-payable.use-case';
 import { FindAllPayablesUseCase } from '../../src/modules/payables/application/use-cases/find-all-payables.use-case';
 import { BatchPayableUseCase } from '../../src/modules/payables/application/use-cases/batch-payable.use-case';
+import { RabbitmqService } from '../../src/config/rabbitmq/rabbitmq.service';
 import { AssignorEntity } from '../../src/modules/assignors/domain/entities/assignors.entity';
 import { PayableEntity } from '../../src/modules/payables/domain/entities/payable.entity';
 
@@ -43,6 +44,10 @@ describe('PayablesController', () => {
         {
           provide: BatchPayableUseCase,
           useValue: { execute: jest.fn() },
+        },
+        {
+          provide: RabbitmqService,
+          useValue: { publish: jest.fn() },
         },
       ],
     }).compile();
