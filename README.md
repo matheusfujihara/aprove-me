@@ -94,12 +94,45 @@ MAIL_FROM=noreply@bankme.com
 
 ---
 
+## Módulos
+
+### `auth`
+
+Responsável por toda a lógica de autenticação:
+
+- `POST /auth/login` — autentica o usuário e retorna um JWT
+- `JwtAuthGuard` — guard global que protege todas as rotas (exceto as marcadas com `@Public()`)
+- `LoginUseCase` — valida credenciais e assina o token
+
+### `users`
+
+Gerencia o cadastro de usuários:
+
+- `POST /users` — cria um novo usuário (`@Public()`)
+- `GET /users/me` — retorna os dados do usuário autenticado (extraídos do JWT)
+
+### `assignors`
+
+CRUD de cedentes (entidades vinculadas aos recebíveis).
+
+### `payables`
+
+CRUD de recebíveis, incluindo processamento assíncrono via RabbitMQ para lotes.
+
+## Arquitetura
+
+O projeto segue os princípios de **Clean Architecture** com separação em camadas:
+
+- `domain/` — entidades e interfaces de repositório
+- `application/` — casos de uso e DTOs
+- `infrastructure/` — controllers, persistência Prisma e guards
+
 ## Endpoints da API
 
 **Base URL:** `http://localhost:3001/integrations`
 
 A maioria dos endpoints exige autenticação via **JWT Bearer Token**.  
-Para obter o token, faça login em `POST /integrations/users/login` e use o valor retornado como `Authorization: Bearer <token>` nos demais endpoints.
+Para obter o token, faça login em `POST /integrations/auth/login` e use o valor retornado como `Authorization: Bearer <token>` nos demais endpoints.
 
 ---
 
@@ -135,7 +168,7 @@ curl -X POST http://localhost:3001/integrations/users \
 #### Login
 
 ```
-POST /integrations/users/login
+POST /integrations/auth/login
 ```
 
 Não requer autenticação.
@@ -152,7 +185,7 @@ Não requer autenticação.
 **curl:**
 
 ```bash
-curl -X POST http://localhost:3001/integrations/users/login \
+curl -X POST http://localhost:3001/integrations/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"usuario@email.com","password":"Senha@Forte1"}'
 ```
@@ -448,7 +481,7 @@ curl -X POST http://localhost:3001/integrations/payable/batch \
 | Método | Endpoint                      | Auth | Descrição                 |
 | ------ | ----------------------------- | ---- | ------------------------- |
 | POST   | `/integrations/users`         | ❌   | Registrar usuário         |
-| POST   | `/integrations/users/login`   | ❌   | Login (obtém JWT)         |
+| POST   | `/integrations/auth/login`    | ❌   | Login (obtém JWT)         |
 | GET    | `/integrations/users/me`      | ✅   | Usuário autenticado atual |
 | GET    | `/integrations/assignor`      | ✅   | Listar cedentes           |
 | POST   | `/integrations/assignor`      | ✅   | Criar cedente             |

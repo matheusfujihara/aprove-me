@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json } from 'express';
 
 async function bootstrap() {
   const logger = new Logger();
@@ -13,6 +14,8 @@ async function bootstrap() {
     methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
+
+  app.use(json({ limit: '50mb' }));
 
   app.setGlobalPrefix('integrations');
   app.useGlobalPipes(
@@ -34,7 +37,7 @@ async function bootstrap() {
 
   SwaggerModule.setup('docs', app, document);
 
-  const PORT = process.env.PORT || 3001;
+  const PORT = process.env.PORT ?? 3001;
   await app
     .listen(PORT)
     .then(() => logger.log(`server running on port ${PORT}`));

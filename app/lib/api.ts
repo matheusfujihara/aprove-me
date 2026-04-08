@@ -85,7 +85,7 @@ export function registerUser(payload: { email: string; password: string }) {
 }
 
 export function login(payload: { email: string; password: string }) {
-  return apiRequest<LoginResponse>("/users/login", {
+  return apiRequest<LoginResponse>("/auth/login", {
     method: "POST",
     body: JSON.stringify(payload),
   }, false);

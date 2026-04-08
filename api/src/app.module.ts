@@ -7,6 +7,7 @@ import { PayablesModule } from './modules/payables/payables.module';
 import { AssignorsModule } from './modules/assignors/assignors.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConsumerModule } from './consumer/consumer.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ConsumerModule } from './consumer/consumer.module';
     AssignorsModule,
     UsersModule,
     ConsumerModule,
+    AuthModule,
   ],
 })
 export class AppModule {}
