@@ -5,7 +5,7 @@ import { CreatePayableUseCase } from '../modules/payables/application/use-cases/
 import { PAYABLE_DLQ, PAYABLE_QUEUE } from 'src/shared/const/rabbitmq';
 import { BatchTracker, PayableMessage } from 'src/shared/interfaces/rabbitmq';
 
-export const MAX_RETRIES = Number(process.env.RABBITMQ_MAX_RETRIES) ?? 4;
+export const MAX_RETRIES = Number(process.env.RABBITMQ_MAX_RETRIES);
 
 @Injectable()
 export class PayableConsumerService implements OnModuleInit {
@@ -24,7 +24,7 @@ export class PayableConsumerService implements OnModuleInit {
   }
 
   private async consumePayableQueue() {
-    this.logger.log(`initalize payable queue`)
+    this.logger.log(`initalize payable queue`);
     const channel = this.rabbitmqService.getChannel();
     await channel.prefetch(1);
 
@@ -117,7 +117,10 @@ export class PayableConsumerService implements OnModuleInit {
     this.logger.log(`Consumer da fila morta ${PAYABLE_DLQ} iniciado`);
   }
 
-  private getOrCreateTracker(batchId: string, totalItems: number): BatchTracker {
+  private getOrCreateTracker(
+    batchId: string,
+    totalItems: number,
+  ): BatchTracker {
     if (!this.batchTrackers.has(batchId)) {
       this.batchTrackers.set(batchId, {
         totalItems,

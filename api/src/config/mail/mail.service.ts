@@ -36,7 +36,9 @@ export class MailService {
 
     try {
       await this.transporter.sendMail(mailOptions);
-      this.logger.log(`E-mail de lote processado enviado para batch ${batchId}`);
+      this.logger.log(
+        `E-mail de lote processado enviado para batch ${batchId}`,
+      );
     } catch (error: any) {
       this.logger.warn(
         `Falha ao enviar e-mail de lote processado (batch ${batchId}): ${error.message}`,

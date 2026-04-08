@@ -27,6 +27,9 @@ jobs:
 
       - run: npx prisma generate
 
+      - name: Lint fix
+        run: npm run lint:fix
+
       - name: Lint
         run: npm run lint
 
@@ -50,6 +53,9 @@ jobs:
           cache-dependency-path: app/package-lock.json
 
       - run: npm ci
+
+      - name: Lint fix
+        run: npm run lint:fix
 
       - name: Lint
         run: npm run lint

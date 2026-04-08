@@ -65,7 +65,7 @@ export class PayablesController {
   async remove(@Param('id', new ParseUUIDPipe()) id: string) {
     await this.deletePayableUseCase.execute(id);
   }
-  
+
   @Post('batch')
   async batch(@Body() dto: BatchPayableDto) {
     return this.batchPayableUseCase.execute(dto);
@@ -85,7 +85,8 @@ export class PayablesController {
 
     return {
       batchId,
-      message: 'Mensagem inválida publicada na fila para simular fluxo de erro rumo à DLQ',
+      message:
+        'Mensagem inválida publicada na fila para simular fluxo de erro rumo à DLQ',
     };
   }
 }

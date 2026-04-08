@@ -17,7 +17,7 @@ export class UsersController {
   }
 
   @Get('me')
-  async me(@Req() request: RequestWithUser) {
+  me(@Req() request: RequestWithUser) {
     return request.user;
   }
 }

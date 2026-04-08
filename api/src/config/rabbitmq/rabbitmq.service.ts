@@ -5,7 +5,12 @@ import {
   OnModuleInit,
 } from '@nestjs/common';
 import * as amqplib from 'amqplib';
-import { PAYABLE_DLQ, PAYABLE_DLX, PAYABLE_EXCHANGE, PAYABLE_QUEUE } from 'src/shared/const/rabbitmq';
+import {
+  PAYABLE_DLQ,
+  PAYABLE_DLX,
+  PAYABLE_EXCHANGE,
+  PAYABLE_QUEUE,
+} from 'src/shared/const/rabbitmq';
 
 @Injectable()
 export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
@@ -31,7 +36,9 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     await this.channel.assertQueue(PAYABLE_DLQ, { durable: true });
     await this.channel.bindQueue(PAYABLE_DLQ, PAYABLE_DLX, PAYABLE_QUEUE);
 
-    await this.channel.assertExchange(PAYABLE_EXCHANGE, 'direct', { durable: true });
+    await this.channel.assertExchange(PAYABLE_EXCHANGE, 'direct', {
+      durable: true,
+    });
     await this.channel.assertQueue(PAYABLE_QUEUE, {
       durable: true,
       arguments: {
@@ -39,7 +46,11 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
         'x-dead-letter-routing-key': PAYABLE_QUEUE,
       },
     });
-    await this.channel.bindQueue(PAYABLE_QUEUE, PAYABLE_EXCHANGE, PAYABLE_QUEUE);
+    await this.channel.bindQueue(
+      PAYABLE_QUEUE,
+      PAYABLE_EXCHANGE,
+      PAYABLE_QUEUE,
+    );
 
     this.logger.log('Connected to RabbitMQ');
   }

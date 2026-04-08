@@ -25,7 +25,9 @@ export class BatchPayableUseCase {
       });
     }
 
-    this.logger.log(`Lote ${batchId} publicado na fila com ${totalItems} itens`);
+    this.logger.log(
+      `Lote ${batchId} publicado na fila com ${totalItems} itens`,
+    );
 
     return {
       batchId,
